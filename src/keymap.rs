@@ -1,72 +1,38 @@
-use rmk::types::action::{EncoderAction, KeyAction};
-use rmk::{a, encoder, k, mo};
-pub(crate) const COL: usize = 7;
-pub(crate) const ROW: usize = 8;
+use rmk::types::action::KeyAction;
+use rmk::{a, k, kbctrl, layer, mo};
+pub(crate) const COL: usize = 12;
+pub(crate) const ROW: usize = 5;
 pub(crate) const NUM_LAYER: usize = 4;
-pub(crate) const NUM_ENCODER: usize = 2;
 #[rustfmt::skip]
 pub const fn get_default_keymap() -> [[[KeyAction; COL]; ROW]; NUM_LAYER] {
     [
         [
-            [k!(Tab), k!(Q), k!(W), k!(E), k!(R), k!(T), a!(No)],
-            [k!(CapsLock), k!(A), k!(S), k!(D), k!(F), k!(G), a!(No)],
-            [k!(LShift), k!(Z), k!(X), k!(C), k!(V), k!(B), a!(No)],
-            [k!(LCtrl), k!(LGui), k!(LAlt), mo!(1), mo!(3), k!(Space), a!(No)],
-            [k!(Backspace), k!(P), k!(O), k!(I), k!(U), k!(Y), a!(No)],
-            [k!(Enter), k!(Backslash), k!(L), k!(K), k!(J), k!(H), a!(No)],
-            [k!(Slash), k!(Up), k!(Dot), k!(Comma), k!(M), k!(N), a!(No)],
-            [k!(Right), k!(Down), k!(Left), mo!(2), mo!(4), k!(Space), a!(No)]
+            [k!(Escape), k!(Kc1), k!(Kc2), k!(Kc3), k!(Kc4), kbctrl!(Bootloader),    k!(Kc6), k!(Kc7), k!(Kc8),   k!(Kc9), k!(Kc0),       k!(Backspace)], 
+            [k!(Tab),    k!(B),   k!(L),   k!(D),   k!(W),   k!(Z),      k!(J),   k!(F),   k!(O),     k!(U),   k!(Semicolon), k!(Delete)], 
+            [k!(LShift), k!(N),   k!(R),   k!(T),   k!(S),   k!(G),      k!(Y),   k!(H),   k!(A),     k!(E),   k!(I),         k!(Quote)], 
+            [k!(LCtrl),  k!(Q),   k!(X),   k!(M),   k!(C),   k!(V),      k!(K),   k!(P),   k!(Comma), k!(Dot), k!(Slash),     k!(RShift)], 
+            [k!(LCtrl),  k!(LAlt),k!(LGui),mo!(1),  mo!(2),  k!(No),     k!(No), k!(Enter),k!(Space), k!(RGui),k!(RAlt),      k!(RCtrl)]
         ],
         [
-            [k!(Escape), k!(Kc1), k!(Kc2), k!(Kc3), k!(Kc4), k!(Kc5), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), k!(Semicolon), k!(Minus), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), k!(Delete), k!(Kc0), k!(Kc9), k!(Kc8), k!(Kc7), k!(Kc6)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), k!(Quote), k!(Equal)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)]
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)]
         ],
         [
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)]
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)]
         ],
         [
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)],
-            [a!(No), a!(No), a!(No), a!(No), a!(No), a!(No), a!(No)]
-        ],
-    ]
-}
-
-pub const fn get_default_encoder_map() -> [[EncoderAction; NUM_ENCODER]; NUM_LAYER] {
-    [
-        [
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-        ],
-        [
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-        ],
-        [
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-        ],
-        [
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-            encoder!(k!(KbVolumeUp), k!(KbVolumeDown)),
-        ],
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)], 
+            [k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z), k!(Tab), k!(B), k!(L), k!(D), k!(W), k!(Z)]
+        ]
     ]
 }

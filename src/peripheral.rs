@@ -8,11 +8,9 @@ use defmt::{info, unwrap};
 use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_nrf::gpio::{Input, Output};
-use embassy_nrf::interrupt::{self, InterruptExt};
 use embassy_nrf::mode::Async;
-use embassy_nrf::peripherals::{RNG, SAADC, USBD};
-use embassy_nrf::saadc::{self, AnyInput, Input as _, Saadc};
-use embassy_nrf::{Peri, bind_interrupts, rng, usb};
+use embassy_nrf::peripherals::{RNG, USBD};
+use embassy_nrf::{bind_interrupts, rng, usb};
 use nrf_mpsl::Flash;
 use nrf_sdc::mpsl::MultiprotocolServiceLayer;
 use nrf_sdc::{self as sdc, mpsl};
@@ -22,10 +20,7 @@ use rand_core::SeedableRng;
 use rmk::ble::build_ble_stack;
 use rmk::config::StorageConfig;
 use rmk::debounce::default_debouncer::DefaultDebouncer;
-use rmk::futures::future::join3;
-use rmk::input_device::adc::{AnalogEventType, NrfAdc};
-use rmk::input_device::battery::BatteryProcessor;
-use rmk::input_device::rotary_encoder::RotaryEncoder;
+use rmk::futures::future::join;
 use rmk::matrix::Matrix;
 use rmk::split::peripheral::run_rmk_split_peripheral;
 use rmk::storage::new_storage_for_split_peripheral;
@@ -34,7 +29,6 @@ use static_cell::StaticCell;
 
 bind_interrupts!(struct Irqs {
     USBD => usb::InterruptHandler<USBD>;
-    SAADC => saadc::InterruptHandler;
     RNG => rng::InterruptHandler<RNG>;
     EGU0_SWI0 => nrf_sdc::mpsl::LowPrioInterruptHandler;
     CLOCK_POWER => nrf_sdc::mpsl::ClockInterruptHandler, usb::vbus_detect::InterruptHandler;
@@ -74,16 +68,6 @@ fn build_sdc<'d, const N: usize>(
         .build(p, rng, mpsl, mem)
 }
 
-/// Initializes the SAADC peripheral in single-ended mode on the given pin.
-fn init_adc(adc_pin: AnyInput, adc: Peri<'static, SAADC>) -> Saadc<'static, 1> {
-    // Then we initialize the ADC. We are only using one channel in this example.
-    let config = saadc::Config::default();
-    let channel_cfg = saadc::ChannelConfig::single_ended(adc_pin.degrade_saadc());
-    interrupt::SAADC.set_priority(interrupt::Priority::P3);
-
-    saadc::Saadc::new(adc, Irqs, config, [channel_cfg])
-}
-
 fn ble_addr() -> [u8; 6] {
     let ficr = embassy_nrf::pac::FICR;
     let high = u64::from(ficr.deviceid(1).read());
@@ -101,7 +85,8 @@ async fn main(spawner: Spawner) {
     nrf_config.dcdc.reg0 = true;
     nrf_config.dcdc.reg1 = true;
     let p = embassy_nrf::init(nrf_config);
-    let mpsl_p = mpsl::Peripherals::new(p.RTC0, p.TIMER0, p.TEMP, p.PPI_CH19, p.PPI_CH30, p.PPI_CH31);
+    let mpsl_p =
+        mpsl::Peripherals::new(p.RTC0, p.TIMER0, p.TEMP, p.PPI_CH19, p.PPI_CH30, p.PPI_CH31);
     let lfclk_cfg = mpsl::raw::mpsl_clock_lfclk_cfg_t {
         source: mpsl::raw::MPSL_CLOCK_LF_SRC_RC as u8,
         rc_ctiv: mpsl::raw::MPSL_RECOMMENDED_RC_CTIV as u8,
@@ -119,8 +104,8 @@ async fn main(spawner: Spawner) {
     )));
     spawner.must_spawn(mpsl_task(&*mpsl));
     let sdc_p = sdc::Peripherals::new(
-        p.PPI_CH17, p.PPI_CH18, p.PPI_CH20, p.PPI_CH21, p.PPI_CH22, p.PPI_CH23, p.PPI_CH24, p.PPI_CH25, p.PPI_CH26,
-        p.PPI_CH27, p.PPI_CH28, p.PPI_CH29,
+        p.PPI_CH17, p.PPI_CH18, p.PPI_CH20, p.PPI_CH21, p.PPI_CH22, p.PPI_CH23, p.PPI_CH24,
+        p.PPI_CH25, p.PPI_CH26, p.PPI_CH27, p.PPI_CH28, p.PPI_CH29,
     );
     let mut rng = rng::Rng::new(p.RNG, Irqs);
     let mut rng_generator = ChaCha12Rng::from_rng(&mut rng).unwrap();
@@ -130,13 +115,7 @@ async fn main(spawner: Spawner) {
     let mut resources = HostResources::new();
     let stack = build_ble_stack(sdc, ble_addr(), &mut rng_generator, &mut resources).await;
 
-    // Initialize the ADC. We are only using one channel for detecting battery level
-    let adc_pin = p.P0_05.degrade_saadc();
-    let saadc = init_adc(adc_pin, p.SAADC);
-    // Wait for ADC calibration.
-    saadc.calibrate().await;
-
-    let (row_pins, col_pins) = config_matrix_pins_nrf!(peripherals: p, input: [P1_09, P0_28, P0_03, P1_10], output:  [P0_30, P0_31, P0_29, P0_02, P1_13, P0_10, P0_09]);
+    let (row_pins, col_pins) = config_matrix_pins_nrf!(peripherals: p, input: [P0_08, P0_04, P0_28, P1_12, P0_03], output:  [P0_06, P0_05, P0_27, P0_26, P1_15, P0_02]);
 
     // Initialize flash
     // nRF52840's bootloader starts from 0xF4000(976K)
@@ -150,27 +129,12 @@ async fn main(spawner: Spawner) {
 
     // Initialize the peripheral matrix
     let debouncer = DefaultDebouncer::new();
-    let mut matrix = Matrix::<_, _, _, 4, 7, true>::new(row_pins, col_pins, debouncer);
+    let mut matrix = Matrix::<_, _, _, 5, 6, true>::new(row_pins, col_pins, debouncer);
     // let mut matrix = rmk::matrix::TestMatrix::<4, 7>::new();
 
-    let pin_a = Input::new(p.P1_06, embassy_nrf::gpio::Pull::None);
-    let pin_b = Input::new(p.P1_04, embassy_nrf::gpio::Pull::None);
-    let mut encoder = RotaryEncoder::with_resolution(pin_a, pin_b, 4, true, 1);
-
-    // Battery monitoring for peripheral
-    // 1. Initialize ADC device:
-    let mut adc_device = NrfAdc::new(
-        saadc,
-        [AnalogEventType::Battery],
-        embassy_time::Duration::from_secs(12),
-        None,
-    );
-    let mut battery_processor = BatteryProcessor::new(2000, 2806);
-
     // Start
-    join3(
-        run_all!(matrix, encoder, adc_device),
-        run_all!(battery_processor),
+    join(
+        run_all!(matrix),
         run_rmk_split_peripheral(0, &stack, &mut storage),
     )
     .await;
