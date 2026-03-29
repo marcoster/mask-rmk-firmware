@@ -1722,6 +1722,7 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 [[package]]
 name = "rmk"
 version = "0.8.2"
+source = "git+https://github.com/marcoster/rmk?rev=93a4fff459edf254a340eee07ad751f4908d392b#93a4fff459edf254a340eee07ad751f4908d392b"
 dependencies = [
  "bt-hci",
  "byteorder",
@@ -1758,6 +1759,7 @@ dependencies = [
 [[package]]
 name = "rmk-config"
 version = "0.6.1"
+source = "git+https://github.com/marcoster/rmk?rev=93a4fff459edf254a340eee07ad751f4908d392b#93a4fff459edf254a340eee07ad751f4908d392b"
 dependencies = [
  "config",
  "once_cell",
@@ -1772,6 +1774,7 @@ dependencies = [
 [[package]]
 name = "rmk-macro"
 version = "0.7.1"
+source = "git+https://github.com/marcoster/rmk?rev=93a4fff459edf254a340eee07ad751f4908d392b#93a4fff459edf254a340eee07ad751f4908d392b"
 dependencies = [
  "cargo_toml",
  "darling 0.23.0",
@@ -1786,6 +1789,7 @@ dependencies = [
 [[package]]
 name = "rmk-types"
 version = "0.2.2"
+source = "git+https://github.com/marcoster/rmk?rev=93a4fff459edf254a340eee07ad751f4908d392b#93a4fff459edf254a340eee07ad751f4908d392b"
 dependencies = [
  "bitfield-struct",
  "defmt 1.0.1",

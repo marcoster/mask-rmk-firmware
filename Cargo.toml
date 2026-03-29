@@ -8,10 +8,12 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-rmk = { path = "../../rmk/rmk", features = [
+#rmk = { path = "../../rmk/rmk", features = [
+rmk = { git = "https://github.com/marcoster/rmk", rev = "93a4fff459edf254a340eee07ad751f4908d392b", features = [
     "nrf52840",
     "split",
     "storage",
+    "adafruit_bl"
 ] }
 
 cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
