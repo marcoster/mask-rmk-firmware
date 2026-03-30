@@ -52,7 +52,7 @@ pub const fn get_default_keymap() -> [[[KeyAction; COL]; ROW]; NUM_LAYER] {
             [k!(Tab),    k!(Q),   k!(W),   k!(E),   k!(R),   k!(T),          k!(Y),   k!(U),    k!(I),     k!(O),   k!(P),         k!(Enter)],
             [k!(LShift), k!(A),   k!(S),   k!(D),   k!(F),   k!(G),          k!(H),   k!(J),    k!(K),     k!(L),   k!(Semicolon), k!(Quote)],
             [k!(LCtrl),  k!(Z),   k!(X),   k!(C),   k!(V),   k!(B),          k!(N),   k!(M),    k!(Comma), k!(Dot), k!(Slash),     k!(RShift)],
-            [k!(LCtrl),  k!(LAlt),k!(LGui),mo!(1),  mo!(2),  k!(KbMute),     df!(0),  k!(Enter),k!(Space), k!(RGui),k!(RAlt),      k!(RCtrl)]
+            [shifted!(Kc6), k!(M),k!(LAlt),k!(Space),k!(Enter),k!(KbMute),   df!(0),  mo!(2),   mo!(1),    k!(RGui),k!(RAlt),      k!(RCtrl)]
 
 
         ],
