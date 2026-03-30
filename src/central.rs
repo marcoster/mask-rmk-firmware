@@ -59,13 +59,13 @@ async fn main(_spawner: Spawner) {
     let keyboard_device_config = DeviceConfig {
         vid: 0x4c4b,
         pid: 0x4643,
-        manufacturer: "Haobo",
-        product_name: "RMK Keyboard",
+        manufacturer: "marcoster",
+        product_name: "MASK Keyboard",
         serial_number: "vial:f64c2b3c:000001",
     };
     let vial_config = VialConfig::new(VIAL_KEYBOARD_ID, VIAL_KEYBOARD_DEF, &[(0, 0), (1, 1)]);
     let storage_config = StorageConfig {
-        clear_storage: true,
+        // clear_storage: true,
         start_addr: 0xA0000,
         num_sectors: 6,
         ..Default::default()
