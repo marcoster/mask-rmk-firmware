@@ -65,6 +65,7 @@ async fn main(_spawner: Spawner) {
     };
     let vial_config = VialConfig::new(VIAL_KEYBOARD_ID, VIAL_KEYBOARD_DEF, &[(0, 0), (1, 1)]);
     let storage_config = StorageConfig {
+        clear_storage: true,
         start_addr: 0xA0000,
         num_sectors: 6,
         ..Default::default()
